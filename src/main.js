@@ -144,3 +144,115 @@ console.log(saveString2.unsafePerformIO());
 */
 
 //要把of視為打包的方法，他會回傳一個含有你傳進去的東西的物件 也許是方法 也許是一個值
+
+//ch10 筆記
+
+//概念一：容器都能用map，能使用map的，都是容器
+//概念二：join扁平化容器，這樣就不會出現 maybe(maybe(maybe{})) 這種東西
+//概念三：將map跟join curry化之後就是chanin 然後你就可以連到天邊
+//概念四：要注意你是跟容器溝通，所以所有值最後也要存回容器裡
+
+// 练习 1
+// ==========
+// 给定一个 user，使用 safeProp 和 map/join 或 chain 安全地获取 street 的 name
+
+var ch10_safeProp = _.curry(function(x, o) {
+    return Maybe.of(o[x]);
+});
+
+var task_ex1 = function(x){
+	return IO.of(ch10_safeProp(x));
+};
+
+var user = {
+  id: 2,
+  name: "albert",
+  address: {
+    street: {
+      number: 22,
+      name: 'Walnut St'
+    }
+  }
+};
+
+
+var getStretName = _.compose(chain(safeProp('name')), chain(safeProp('street')), safeProp('address'));
+
+console.log("ch10_1");
+console.log(getStretName(user));
+
+
+
+
+// 练习 2
+// ==========
+// 使用 getFile 获取文件名并删除目录，所以返回值仅仅是文件，然后以纯的方式打印文件
+
+var getFile = function() {
+  return new IO(function(){ return __filename; });
+}
+
+var pureLog = function(x) {
+  return new IO(function(){
+    console.log(x);
+    return 'logged ' + x;
+  });
+}
+
+var ex2 = undefined;
+
+/*
+// 练习 3
+// ==========
+// 使用 getPost() 然后以 post 的 id 调用 getComments()
+var getPost = function(i) {
+  return new Task(function (rej, res) {
+    setTimeout(function () {
+      res({ id: i, title: 'Love them tasks' });
+    }, 300);
+  });
+}
+
+var getComments = function(i) {
+  return new Task(function (rej, res) {
+    setTimeout(function () {
+      res([
+        {post_id: i, body: "This book should be illegal"},
+        {post_id: i, body: "Monads are like smelly shallots"}
+      ]);
+    }, 300);
+  });
+}
+
+
+var ex3 = undefined;
+
+
+// 练习 4
+// ==========
+// 用 validateEmail、addToMailingList 和 emailBlast 实现 ex4 的类型签名
+
+//  addToMailingList :: Email -> IO([Email])
+var addToMailingList = (function(list){
+  return function(email) {
+    return new IO(function(){
+      list.push(email);
+      return list;
+    });
+  }
+})([]);
+
+function emailBlast(list) {
+  return new IO(function(){
+    return 'emailed: ' + list.join(',');
+  });
+}
+
+var validateEmail = function(x){
+  return x.match(/\S+@\S+\.\S+/) ? (new Right(x)) : (new Left('invalid email'));
+}
+
+//  ex4 :: Email -> Either String (IO String)
+var ex4 = undefined;
+
+*/
